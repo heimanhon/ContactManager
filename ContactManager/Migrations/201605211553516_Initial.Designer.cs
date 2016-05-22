@@ -13,7 +13,7 @@ namespace ContactManager.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201512191639585_Initial"; }
+            get { return "201605211553516_Initial"; }
         }
         
         string IMigrationMetadata.Source

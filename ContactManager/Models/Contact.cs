@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Globalization;
 namespace ContactManager.Models
 {
@@ -12,7 +13,9 @@ namespace ContactManager.Models
         public string Zip { get; set; }
         [DataType(DataType.EmailAddress)]
         public string Email { get; set; }
+        //[ForeignKey("Member")] 
+        //public string MemberId { get; set; }
 
-        public Member Member { get; set; }
+        //public virtual Member Member { get; set; }
     }
 }

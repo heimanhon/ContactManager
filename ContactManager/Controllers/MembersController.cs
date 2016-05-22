@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Entity;
@@ -11,113 +10,116 @@ using ContactManager.Models;
 
 namespace ContactManager.Controllers
 {
-    public class CmController : Controller
+    public class MembersController : Controller
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Cm
+        // GET: Members
         public ActionResult Index()
         {
-            return View(db.Contacts.ToList());
+            var members = db.Members.Include(m => m.Company).Include(m => m.Contact);
+            return View(members.ToList());
         }
 
-        // GET: Cm/Details/5
-        public ActionResult Details(int? id)
+        // GET: Members/Details/5
+        public ActionResult Details(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
-            if (contact == null)
+            Member member = db.Members.Find(id);
+            if (member == null)
             {
                 return HttpNotFound();
             }
-            return View(contact);
+            return View(member);
         }
 
-        // GET: Cm/Create
-        [Authorize(Roles = "canEdit")]
+        // GET: Members/Create
         public ActionResult Create()
         {
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "CompanyName");
+            ViewBag.ContactId = new SelectList(db.Contacts, "ContactId", "Name");
             return View();
         }
 
-        // POST: Cm/Create
+        // POST: Members/Create
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "canEdit")]
-        public ActionResult Create([Bind(Include = "ContactId,Name,Address,City,State,Zip,Email")] Contact contact)
+        public ActionResult Create([Bind(Include = "Id,UserName,ContactId,CompanyId")] Member member)
         {
             if (ModelState.IsValid)
             {
-                db.Contacts.Add(contact);
+                db.Members.Add(member);
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
 
-            return View(contact);
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "CompanyName", member.CompanyId);
+            ViewBag.ContactId = new SelectList(db.Contacts, "ContactId", "Name", member.ContactId);
+            return View(member);
         }
 
-        // GET: Cm/Edit/5
-        [Authorize(Roles = "canEdit")]
-        public ActionResult Edit(int? id)
+        // GET: Members/Edit/5
+        public ActionResult Edit(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
-            if (contact == null)
+            Member member = db.Members.Find(id);
+            if (member == null)
             {
                 return HttpNotFound();
             }
-            return View(contact);
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "CompanyName", member.CompanyId);
+            ViewBag.ContactId = new SelectList(db.Contacts, "ContactId", "Name", member.ContactId);
+            return View(member);
         }
 
-        // POST: Cm/Edit/5
+        // POST: Members/Edit/5
         // To protect from overposting attacks, please enable the specific properties you want to bind to, for 
         // more details see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "canEdit")]
-        public ActionResult Edit([Bind(Include = "ContactId,Name,Address,City,State,Zip,Email")] Contact contact)
+        public ActionResult Edit([Bind(Include = "Id,UserName,ContactId,CompanyId")] Member member)
         {
             if (ModelState.IsValid)
             {
-                db.Entry(contact).State = EntityState.Modified;
+                db.Entry(member).State = EntityState.Modified;
                 db.SaveChanges();
                 return RedirectToAction("Index");
             }
-            return View(contact);
+            ViewBag.CompanyId = new SelectList(db.Companies, "CompanyId", "CompanyName", member.CompanyId);
+            ViewBag.ContactId = new SelectList(db.Contacts, "ContactId", "Name", member.ContactId);
+            return View(member);
         }
 
-        // GET: Cm/Delete/5
-        [Authorize(Roles = "canEdit")]
-        public ActionResult Delete(int? id)
+        // GET: Members/Delete/5
+        public ActionResult Delete(string id)
         {
             if (id == null)
             {
                 return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
             }
-            Contact contact = db.Contacts.Find(id);
-            if (contact == null)
+            Member member = db.Members.Find(id);
+            if (member == null)
             {
                 return HttpNotFound();
             }
-            return View(contact);
+            return View(member);
         }
 
-        // POST: Cm/Delete/5
+        // POST: Members/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        [Authorize(Roles = "canEdit")]
-        public ActionResult DeleteConfirmed(int id)
+        public ActionResult DeleteConfirmed(string id)
         {
-            Contact contact = db.Contacts.Find(id);
-            db.Contacts.Remove(contact);
+            Member member = db.Members.Find(id);
+            db.Members.Remove(member);
             db.SaveChanges();
             return RedirectToAction("Index");
         }

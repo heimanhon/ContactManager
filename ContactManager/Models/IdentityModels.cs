@@ -33,5 +33,7 @@ namespace ContactManager.Models
         public System.Data.Entity.DbSet<ContactManager.Models.Contact> Contacts { get; set; }
 
         public System.Data.Entity.DbSet<ContactManager.Models.Company> Companies { get; set; }
+
+        public System.Data.Entity.DbSet<ContactManager.Models.Member> Members { get; set; }
     }
 }

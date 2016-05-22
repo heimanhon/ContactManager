@@ -8,6 +8,17 @@ namespace ContactManager.Migrations
         public override void Up()
         {
             CreateTable(
+                "dbo.Companies",
+                c => new
+                    {
+                        CompanyId = c.String(nullable: false, maxLength: 128),
+                        CompanyName = c.String(),
+                        Offers = c.String(),
+                        Discount = c.Double(nullable: false),
+                    })
+                .PrimaryKey(t => t.CompanyId);
+            
+            CreateTable(
                 "dbo.Contacts",
                 c => new
                     {
@@ -20,6 +31,21 @@ namespace ContactManager.Migrations
                         Email = c.String(),
                     })
                 .PrimaryKey(t => t.ContactId);
+            
+            CreateTable(
+                "dbo.Members",
+                c => new
+                    {
+                        Id = c.String(nullable: false, maxLength: 128),
+                        UserName = c.String(),
+                        ContactId = c.Int(nullable: false),
+                        CompanyId = c.String(maxLength: 128),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.Companies", t => t.CompanyId)
+                .ForeignKey("dbo.Contacts", t => t.ContactId, cascadeDelete: true)
+                .Index(t => t.ContactId)
+                .Index(t => t.CompanyId);
             
             CreateTable(
                 "dbo.AspNetRoles",
@@ -97,18 +123,24 @@ namespace ContactManager.Migrations
             DropForeignKey("dbo.AspNetUserLogins", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserClaims", "UserId", "dbo.AspNetUsers");
             DropForeignKey("dbo.AspNetUserRoles", "RoleId", "dbo.AspNetRoles");
+            DropForeignKey("dbo.Members", "ContactId", "dbo.Contacts");
+            DropForeignKey("dbo.Members", "CompanyId", "dbo.Companies");
             DropIndex("dbo.AspNetUserLogins", new[] { "UserId" });
             DropIndex("dbo.AspNetUserClaims", new[] { "UserId" });
             DropIndex("dbo.AspNetUsers", "UserNameIndex");
             DropIndex("dbo.AspNetUserRoles", new[] { "RoleId" });
             DropIndex("dbo.AspNetUserRoles", new[] { "UserId" });
             DropIndex("dbo.AspNetRoles", "RoleNameIndex");
+            DropIndex("dbo.Members", new[] { "CompanyId" });
+            DropIndex("dbo.Members", new[] { "ContactId" });
             DropTable("dbo.AspNetUserLogins");
             DropTable("dbo.AspNetUserClaims");
             DropTable("dbo.AspNetUsers");
             DropTable("dbo.AspNetUserRoles");
             DropTable("dbo.AspNetRoles");
+            DropTable("dbo.Members");
             DropTable("dbo.Contacts");
+            DropTable("dbo.Companies");
         }
     }
 }
